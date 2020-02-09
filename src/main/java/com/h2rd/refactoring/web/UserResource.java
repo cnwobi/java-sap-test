@@ -77,7 +77,7 @@ public class UserResource{
     }
 
     @GET
-    @Path("find/")
+    @Path("/find")
     public Response getUsers() {
     	
         ApplicationContext context = new ClassPathXmlApplicationContext(new String[] {
