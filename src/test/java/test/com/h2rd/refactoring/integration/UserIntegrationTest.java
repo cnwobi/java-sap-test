@@ -1,6 +1,8 @@
 package test.com.h2rd.refactoring.integration;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 
 import javax.ws.rs.core.Response;
 
@@ -20,7 +22,7 @@ public class UserIntegrationTest {
 		User integration = new User();
         integration.setName("integration");
         integration.setEmail("initial@integration.com");
-        integration.setRoles(new ArrayList<String>());
+        integration.setRoles(Collections.synchronizedSet(new HashSet<>()));
         
         Response response = userResource.addUser(integration.getName(), integration.getEmail(), integration.getRoles());
         Assert.assertEquals(200, response.getStatus());
@@ -35,7 +37,7 @@ public class UserIntegrationTest {
         User updated = new User();
         updated.setName("integration");
         updated.setEmail("updated@integration.com");
-        updated.setRoles(new ArrayList<String>());
+        updated.setRoles(Collections.synchronizedSet(new HashSet<>()));
         
         Response response = userResource.updateUser(updated.getName(), updated.getEmail(), updated.getRoles());
         Assert.assertEquals(200, response.getStatus());

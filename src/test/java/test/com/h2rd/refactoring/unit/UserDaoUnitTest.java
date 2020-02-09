@@ -17,7 +17,7 @@ public class UserDaoUnitTest {
         User user = new User();
         user.setName("Fake Name");
         user.setEmail("fake@email.com");
-        user.setRoles(Arrays.asList("admin", "master"));
+     //   user.setRoles(Arrays.asList("admin", "master"));
 
         userDao.saveUser(user);
     }
@@ -29,7 +29,7 @@ public class UserDaoUnitTest {
         User user = new User();
         user.setName("Fake Name");
         user.setEmail("fake@email.com");
-        user.setRoles(Arrays.asList("admin", "master"));
+      //  user.setRoles(Arrays.asList("admin", "master"));
 
         try {
             userDao.deleteUser(user);

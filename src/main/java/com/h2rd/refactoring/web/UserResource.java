@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Path("/users")
 @Repository
@@ -25,12 +26,12 @@ public class UserResource{
     @Path("add/")
     public Response addUser(@QueryParam("name") String name,
                             @QueryParam("email") String email,
-                            @QueryParam("role") List<String> roles) {
+                            @QueryParam("role") Set<String> roles) {
 
         User user = new User();
         user.setName(name);
         user.setEmail(email);
-        user.setRoles(roles);
+       // user.setRoles(roles);
 
         if (userDao == null) {
             userDao = UserDao.getUserDao();
@@ -44,12 +45,12 @@ public class UserResource{
     @Path("update/")
     public Response updateUser(@QueryParam("name") String name,
                                @QueryParam("email") String email,
-                               @QueryParam("role") List<String> roles) {
+                               @QueryParam("role") Set<String> roles) {
 
         User user = new User();
         user.setName(name);
         user.setEmail(email);
-        user.setRoles(roles);
+        //user.setRoles(roles);
 
         if (userDao == null) {
             userDao = UserDao.getUserDao();
@@ -67,7 +68,7 @@ public class UserResource{
         User user = new User();
         user.setName(name);
         user.setEmail(email);
-        user.setRoles(roles);
+      //  user.setRoles(roles);
 
         if (userDao == null) {
             userDao = UserDao.getUserDao();
