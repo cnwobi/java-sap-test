@@ -1,5 +1,8 @@
 package com.h2rd.refactoring.service;
 
+import com.h2rd.refactoring.exception.EmailException;
+import com.h2rd.refactoring.exception.RoleException;
+import com.h2rd.refactoring.exception.UserNotFoundException;
 import com.h2rd.refactoring.usermanagement.User;
 
 import java.util.List;
