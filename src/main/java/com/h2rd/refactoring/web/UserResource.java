@@ -5,6 +5,7 @@ import com.h2rd.refactoring.usermanagement.UserDao;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.springframework.context.ApplicationContext;
@@ -78,16 +79,20 @@ public class UserResource{
 
     @GET
     @Path("/find")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getUsers() {
-    	
-        ApplicationContext context = new ClassPathXmlApplicationContext(new String[] {
-    		"classpath:/application-config.xml"	
-    	});
-    	userDao = context.getBean(UserDao.class);
-    	List<User> users = userDao.getUsers();
-    	if (users == null) {
-    		users = new ArrayList<User>();
-    	}
+
+        if (userDao == null) {
+            userDao = UserDao.getUserDao();
+        }
+
+        List<User> users = userDao.getUsers();
+        if (users == null || users.isEmpty()) {
+            User user = new User();
+           // user.setStatus("error");
+            //user.setMessage("there are no users in the database");
+            return Response.status(400).entity(user).build();
+        }
 
         GenericEntity<List<User>> usersEntity = new GenericEntity<List<User>>(users) {};
         return Response.status(200).entity(usersEntity).build();
