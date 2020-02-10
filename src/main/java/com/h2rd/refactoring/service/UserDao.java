@@ -7,7 +7,7 @@ import com.h2rd.refactoring.usermanagement.User;
 
 import java.util.List;
 
-public interface UserService {
+public interface UserDao {
     void saveUser(User user) throws Exception;
     List<User> getUsers();
     void deleteUser(User userToDelete) throws UserNotFoundException;

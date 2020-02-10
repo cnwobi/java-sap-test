@@ -1,8 +1,7 @@
 package com.h2rd.refactoring.web;
 
-import com.h2rd.refactoring.service.UserService;
+import com.h2rd.refactoring.service.UserDao;
 import com.h2rd.refactoring.usermanagement.User;
-import com.h2rd.refactoring.usermanagement.UserDao;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.GenericEntity;
@@ -10,11 +9,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -22,12 +18,16 @@ import java.util.Set;
 @Repository
 public class UserResource{
 
-    public UserDao userDao;
+    public com.h2rd.refactoring.usermanagement.UserDao userDao;
 
-    private UserService userService;
+    private UserDao userDao;
 @Autowired
-    public UserResource(UserService userService) {
-        this.userService = userService;
+    public UserResource(UserDao userDao) {
+        this.userDao = userDao;
+    }
+
+    public UserResource() {
+
     }
 
     @GET
@@ -42,7 +42,7 @@ public class UserResource{
        // user.setRoles(roles);
 
         if (userDao == null) {
-            userDao = UserDao.getUserDao();
+            userDao = com.h2rd.refactoring.usermanagement.UserDao.getUserDao();
         }
 
         userDao.saveUser(user);
@@ -61,7 +61,7 @@ public class UserResource{
         //user.setRoles(roles);
 
         if (userDao == null) {
-            userDao = UserDao.getUserDao();
+            userDao = com.h2rd.refactoring.usermanagement.UserDao.getUserDao();
         }
 
         userDao.updateUser(user);
@@ -79,7 +79,7 @@ public class UserResource{
       //  user.setRoles(roles);
 
         if (userDao == null) {
-            userDao = UserDao.getUserDao();
+            userDao = com.h2rd.refactoring.usermanagement.UserDao.getUserDao();
         }
 
         userDao.deleteUser(user);
@@ -90,12 +90,13 @@ public class UserResource{
     @Path("/find")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUsers() {
-
-       /* if (userDao == null) {
-            userDao = UserDao.getUserDao();
-        }
+        userDao = com.h2rd.refactoring.usermanagement.UserDao.getUserDao();
 
         List<User> users = userDao.getUsers();
+       /* if (userDao == null) {
+
+        }
+
         if (users == null || users.isEmpty()) {
             User user = new User();
            // user.setStatus("error");
@@ -112,7 +113,7 @@ public class UserResource{
     public Response findUser(@QueryParam("name") String name) {
 
         if (userDao == null) {
-            userDao = UserDao.getUserDao();
+            userDao = com.h2rd.refactoring.usermanagement.UserDao.getUserDao();
         }
 
         User user = userDao.findUser(name);

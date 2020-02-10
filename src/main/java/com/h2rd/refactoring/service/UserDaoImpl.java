@@ -1,11 +1,9 @@
 package com.h2rd.refactoring.service;
 
-import com.h2rd.refactoring.dao.UserDao;
 import com.h2rd.refactoring.exception.EmailException;
 import com.h2rd.refactoring.exception.RoleException;
 import com.h2rd.refactoring.exception.UserNotFoundException;
 import com.h2rd.refactoring.usermanagement.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -15,15 +13,23 @@ import java.util.Optional;
 
 @Service
 
-public class UserServiceImpl implements UserService {
+public class UserDaoImpl implements UserDao {
 
-    private UserDao userDao;
+    private List<User> users = Collections.synchronizedList(new ArrayList<>());
+    private com.h2rd.refactoring.dao.UserDao userDao;
+    private static UserDao userDao;
 
-    @Autowired
-    public UserServiceImpl(UserDao userDao) {
+    public UserDaoImpl(com.h2rd.refactoring.dao.UserDao userDao) {
         this.userDao = userDao;
     }
+   private UserDaoImpl(){
 
+   }
+
+   public static UserDao getUserDao(){
+        if(userDao == null) userDao = new UserDaoImpl();
+        return userDao;
+   }
     @Override
     public void saveUser(User user) throws Exception {
         if (user.getEmail().isEmpty()) throw new EmailException("A valid email is required to add user");

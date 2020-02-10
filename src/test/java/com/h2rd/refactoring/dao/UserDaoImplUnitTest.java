@@ -19,7 +19,7 @@ public class UserDaoImplUnitTest {
         user.setEmail("fake@email.com");
         user.getRoles().add("admin");
         user.getRoles().add("masters");
-        userDao = new UserDaoImpl();
+        userDao =
     }
 
     @Test

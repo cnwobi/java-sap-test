@@ -7,6 +7,16 @@ import java.util.Collections;
 import java.util.List;
 
 public class UserDaoImpl implements UserDao {
+    private UserDao userDao;
+    private UserDaoImpl(){
+
+    }
+
+
+    private UserDao getUserDao(){
+        if(userDao == null) userDao = new UserDaoImpl();
+        return userDao;
+    }
     private List<User> users = Collections.synchronizedList(new ArrayList<>());
 
     @Override
