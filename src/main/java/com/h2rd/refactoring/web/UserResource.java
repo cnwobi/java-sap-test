@@ -13,6 +13,9 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -23,7 +26,9 @@ public class UserResource{
 
 
 
-    private UserDao userDao = UserDaoImpl.getUserDao();
+   /* private UserDao userDao = UserDaoImpl.getUserDao();*/
+    private ApplicationContext context = new ClassPathXmlApplicationContext("application-config.xml");
+    private UserDao userDao = (UserDao) context.getBean("userDao");
 
 
     @POST
