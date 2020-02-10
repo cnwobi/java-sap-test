@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-@Component
+
 public class UserDaoImpl implements UserDao {
 
 
@@ -17,6 +17,7 @@ public class UserDaoImpl implements UserDao {
 
 
     private Map<String,User> users = Collections.synchronizedMap(new HashMap<>());
+
 
 
     @Override

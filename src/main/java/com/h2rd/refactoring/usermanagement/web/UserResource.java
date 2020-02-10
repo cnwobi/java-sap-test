@@ -31,13 +31,11 @@ public class UserResource {
         userDao = (UserDao) Context.getContext().getBean("userDao");
     }
 
-    public UserResource(UserDao userDao) {
+  /*  public UserResource(UserDao userDao) {
         if(userDao != null) this.userDao = userDao;
     }
+*/
 
-    public UserResource() {
-
-    }
 
     @POST
     @Path("/add")

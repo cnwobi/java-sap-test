@@ -44,7 +44,7 @@ public class UserIntegrationTest {
 	@Test
 	public void updateUserTest() throws Exception {
         UserDao userDao = new UserDaoImpl();
-		UserResource userResource = new UserResource(userDao);
+		UserResource userResource = new UserResource();
 
 		//createUserTest();
         

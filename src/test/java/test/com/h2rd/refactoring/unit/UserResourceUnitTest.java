@@ -34,7 +34,7 @@ public class UserResourceUnitTest {
   public void setUp(){
      /* userDao = (UserDao) Context.getContext().getBean("userDao");*/
       MockitoAnnotations.initMocks(this);
-    userResource = new UserResource(userDao);
+    userResource = new UserResource();
      // userResource = new UserResource();
       testUser = new User();
       testUser.setName("Chuka");
