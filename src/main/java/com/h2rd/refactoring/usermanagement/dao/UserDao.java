@@ -12,7 +12,7 @@ public interface UserDao {
     void saveUser(User user) throws Exception;
    Map<String,User> getUsers();
     void deleteUser(User userToDelete) throws UserNotFoundException, EmailException;
-    void updateUser(User userToUpdate) throws UserNotFoundException, RoleException, EmailException;
+    User updateUser(User userToUpdate) throws UserNotFoundException, RoleException, EmailException;
     User findUserByEmail(String email) throws UserNotFoundException, EmailException;
 
     List<User> findUsers(String name);

@@ -1,4 +1,4 @@
-package com.h2rd.refactoring.service;
+package test.com.h2rd.refactoring.unit;
 
 import com.h2rd.refactoring.usermanagement.dao.UserDao;
 import com.h2rd.refactoring.usermanagement.dao.UserDaoImpl;
@@ -9,14 +9,11 @@ import com.h2rd.refactoring.usermanagement.domain.User;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.*;
 
-public class UserDao1ImplTest {
+public class UserDaoUnitTest {
 
     private Map<String,User> users;
     private User user;
@@ -164,12 +161,94 @@ public void deleteUserWithEmptyEmailParameterTest() throws Exception{
 
 
 
-        assertThatExceptionOfType(UserNotFoundException.class)
+        assertThatExceptionOfType(EmailException.class)
                 .isThrownBy(() -> userDao.updateUser(toUpdate))
                 .withMessage("Please provide a valid email address");
 
     }
 
 
+    @Test
+    public void findNonExistingUserByEmailTest() throws Exception {
+        saveUserWithUniqueEmailAndAtLeastOneRoleTest();
+        String searchEmail = "chuka@nwobi.com";
+        assertThatExceptionOfType(UserNotFoundException.class)
+                .isThrownBy(() ->{
+                    userDao.findUserByEmail(searchEmail);
+                })
+                .withMessage("User with email address "+ searchEmail+ " does not exist on record");
+    }
+    @Test
+    public void findExistingUserByEmailTest() throws Exception {
+        saveUserWithUniqueEmailAndAtLeastOneRoleTest();
+        String searchEmail = user.getEmail();
+        User user1 = userDao.findUserByEmail(searchEmail);
 
+        assertThat(user1).isEqualToComparingFieldByField(user);
+
+    }
+
+    @Test
+    public void findNonExistingUserByNullEmailValueTest() throws Exception {
+        saveUserWithNonUniqueEmailAndAtLeastOneRoleTest();
+        String searchEmail = null;
+        assertThatExceptionOfType(EmailException.class)
+                .isThrownBy(() ->{
+                    userDao.findUserByEmail(searchEmail);
+                })
+                .withMessage("Please provide a valid email address");
+    }
+    @Test
+    public void findNonExistingUserByEmptyEmailValueTest(){
+        String searchEmail = "";
+        assertThatExceptionOfType(EmailException.class)
+                .isThrownBy(() ->{
+                    userDao.findUserByEmail(searchEmail);
+                })
+                .withMessage("Please provide a valid email address");
+    }
+    @Test
+    public void findUsers() {
+    }
+
+    @Test
+    public void updateUserWithoutAnInvalidEmailAddressTest() throws Exception {
+        saveUserWithUniqueEmailAndAtLeastOneRoleTest();
+        User user1 = new User();
+        assertThatExceptionOfType(EmailException.class)
+                .isThrownBy(() ->{
+                    userDao.updateUser(user1);
+                })
+                .withMessage("Please provide a valid email address");
+    }
+
+    @Test
+    public void updateUserWithValidEmailAddressTest() throws Exception{
+        saveUserWithUniqueEmailAndAtLeastOneRoleTest();
+        String nameToUpdate = "newest fake Name";
+        String role = "sap dev";
+        Set<String> roles = Collections.synchronizedSet(new HashSet<>(Arrays.asList(role)));
+        User user1 = new User();
+        user1.setEmail(user.getEmail());
+        user1.setRoles(roles);
+        user1.setName(nameToUpdate);
+// assert that user is not already update
+        assertThat(user.getName()).isNotEqualTo(nameToUpdate);
+        assertThat(user.getRoles()).doesNotContain(role);
+
+
+        userDao.updateUser(user1);
+
+        //update
+        User updatedUser = userDao.getUsers().get(user.getEmail());
+
+        //assert update occurred
+        assertThat(updatedUser.getName()).isEqualTo(nameToUpdate);
+        assertThat(updatedUser.getRoles()).contains(role);
+
+    }
+
+    public void updateUserWithValidEmailAddressAndNullName(){
+
+    }
 }

@@ -20,14 +20,24 @@ import java.util.*;
 @Path("/users")
 @Controller
 
-public class UserResource{
+public class UserResource {
 
 
+    private UserDao userDao;
+    private ResponseMessage responseMessage;
 
+    {
+        responseMessage = new ResponseMessage();
+        userDao = (UserDao) Context.getContext().getBean("userService");
+    }
+//for testing
+    public UserResource(UserDao userDao) {
+        if(userDao != null) this.userDao = userDao;
+    }
 
-    private UserDao userDao = (UserDao) Context.getContext().getBean("userService");
+    public UserResource() {
 
-
+    }
 
     @POST
     @Path("/add")
@@ -40,34 +50,51 @@ public class UserResource{
         User user = new User();
         user.setName(name);
         user.setEmail(email);
-       user.setRoles(rolesSet(roles));
-       try {
-           userDao.saveUser(user);
-       }
-       catch (EmailException | RoleException exception){
-           ResponseMessage e = new ResponseMessage();
-           e.setMessage(exception.getMessage());
-           e.setStatus(400);
-           return Response.status(400).entity(e).build();
+        user.setRoles(convertRoleStringToRoleSet(roles));
+        try {
+            userDao.saveUser(user);
+        } catch (EmailException | RoleException exception) {
 
-       }
+            responseMessage.setMessage(exception.getMessage());
+            responseMessage.setStatus(400);
+            return Response.status(400).entity(responseMessage).build();
+
+        }
 
         return Response.status(201).entity(user).build();
     }
 
-    @GET
-    @Path("update/")
+    @PUT
+    @Path("/update")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response updateUser(@QueryParam("name") String name,
                                @QueryParam("email") String email,
-                               @QueryParam("role") Set<String> roles) throws UserNotFoundException, RoleException, EmailException {
+                               @QueryParam("role") String roles) throws UserNotFoundException, RoleException, EmailException {
 
-       /* User user = User.builder()
-                .email(email)
-                .name(name).build();
-*/
-User user =  new User();
-        userDao.updateUser(user);
-        return Response.ok().entity(user).build();
+        User user = new User();
+        user.setName(name);
+        user.setEmail(email);
+        user.setRoles(convertRoleStringToRoleSet(roles));
+        User updateUser;
+
+        try {
+            updateUser = userDao.updateUser(user);
+
+
+        } catch (EmailException e) {
+            responseMessage.setStatus(400);
+            responseMessage.setMessage(e.getMessage());
+            return Response.status(400).entity(responseMessage).build();
+
+
+        } catch (UserNotFoundException e) {
+            responseMessage.setMessage(e.getMessage());
+            responseMessage.setStatus(404);
+            return Response.status(404).entity(responseMessage).build();
+        }
+
+        return Response.ok().entity(updateUser).build();
     }
 
     @DELETE
@@ -75,27 +102,25 @@ User user =  new User();
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteUser(@QueryParam("email") String email
-                              ) throws UserNotFoundException {
-        ResponseMessage responseMessage =  new ResponseMessage();
+    ) throws UserNotFoundException {
+
         User user = new User();
         user.setEmail(email);
 
-       try{
-           userDao.deleteUser(user);
-       }
-        catch (UserNotFoundException e){
-           responseMessage.setMessage(e.getMessage());
-           responseMessage.setStatus(404);
-           return Response.status(404).entity(responseMessage).build();
+        try {
+            userDao.deleteUser(user);
+        } catch (UserNotFoundException e) {
+            responseMessage.setMessage(e.getMessage());
+            responseMessage.setStatus(404);
+            return Response.status(404).entity(responseMessage).build();
+        } catch (EmailException em) {
+            responseMessage.setMessage(em.getMessage());
+            responseMessage.setStatus(400);
+            return Response.status(400).entity(responseMessage).build();
         }
-       catch (EmailException em){
-           responseMessage.setMessage(em.getMessage());
-           responseMessage.setStatus(400);
-           return Response.status(400).entity(responseMessage).build();
-       }
 
-        responseMessage.setMessage("User with email "+email+" was deleted successfully");
-         responseMessage.setStatus(200);
+        responseMessage.setMessage("User with email " + email + " was deleted successfully");
+        responseMessage.setStatus(200);
         return Response.ok().entity(responseMessage).build();
     }
 
@@ -103,31 +128,46 @@ User user =  new User();
     @Path("/find")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUsers() throws Exception {
-            List<User> users = userDao.findAllUsers();
-      if(users.isEmpty()) {
-          ResponseMessage e = new ResponseMessage();
-          e.setStatus(200);
-          e.setMessage("No users found in the database");
-          return Response.status(200).entity(e).build();
-      }
+        List<User> users = userDao.findAllUsers();
+        if (users.isEmpty()) {
 
-        GenericEntity<List<User>> usersEntity = new GenericEntity<List<User>>(users) {};
+            responseMessage.setStatus(200);
+            responseMessage.setMessage("No users found in the database");
+            return Response.status(200).entity(responseMessage).build();
+        }
+
+        GenericEntity<List<User>> usersEntity = new GenericEntity<List<User>>(users) {
+        };
         return Response.status(200).entity(usersEntity).build();
     }
 
     @GET
-    @Path("search/")
-    public Response findUser(@QueryParam("email") String email) throws UserNotFoundException, EmailException {
+    @Path("/search")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response findUser(@QueryParam("email") String email) {
+
+        User user;
+        try {
+            user = userDao.findUserByEmail(email);
+        } catch (UserNotFoundException e) {
+            responseMessage.setMessage(e.getMessage());
+            responseMessage.setStatus(404);
+            return Response.status(404).entity(responseMessage).build();
+        } catch (EmailException e) {
+            responseMessage.setMessage(e.getMessage());
+            responseMessage.setStatus(400);
+            return Response.status(400).entity(responseMessage).build();
+        }
 
 
-        User user = userDao.findUserByEmail(email);
         return Response.ok().entity(user).build();
     }
 
-    private Set<String> rolesSet(String roles){
+    private Set<String> convertRoleStringToRoleSet(String roles) {
 
         Set<String> roleSet = Collections.synchronizedSet(new HashSet<>());
-        if(roles !=null) {
+        if (roles != null) {
             String[] stringsOfRoles = roles.split(",");
             roleSet.addAll(Arrays.asList(stringsOfRoles));
 

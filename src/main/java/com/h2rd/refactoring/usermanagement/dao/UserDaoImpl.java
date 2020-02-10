@@ -62,14 +62,13 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void updateUser(User userToUpdate) throws UserNotFoundException, RoleException, EmailException {
+    public User updateUser(User userToUpdate) throws UserNotFoundException, RoleException, EmailException {
         User update = findUserByEmail(userToUpdate.getEmail());
         update.setName(userToUpdate.getName());
 
         if (userToUpdate.getRoles() != null && userToUpdate.getRoles().size() > 0) {
+            update.getRoles().clear();
             update.setRoles(userToUpdate.getRoles());
-        } else {
-            throw new RoleException("User must have a role");
         }
 
         if (!userToUpdate.getEmail().isEmpty() && userToUpdate.getEmail() != null) {
@@ -78,19 +77,21 @@ public class UserDaoImpl implements UserDao {
             throw new EmailException("Provide a valid email for update");
         }
 
-
+      return update;
     }
 
-    private Optional<User> findOptionalUserByEmail(String email) throws UserNotFoundException {
-        if (email == null || email.isEmpty()) throw new UserNotFoundException("Please provide a valid email address");
+    private Optional<User> findOptionalUserByEmail(String email) throws  EmailException {
+        if (email == null || email.isEmpty()) throw new EmailException("Please provide a valid email address");
 
         return Optional.ofNullable(users.get(email));
     }
 
     @Override
-    public User findUserByEmail(String email) throws UserNotFoundException {
+    public User findUserByEmail(String email) throws UserNotFoundException, EmailException {
+        Optional<User> optionalUser = findOptionalUserByEmail(email);
 
-        return findOptionalUserByEmail(email).orElseThrow(() -> new UserNotFoundException("User with " + email + " does not exist on record"));
+
+        return findOptionalUserByEmail(email).orElseThrow(() -> new UserNotFoundException("User with email address " + email + " does not exist on record"));
     }
 
     @Override
