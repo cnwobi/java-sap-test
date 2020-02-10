@@ -30,6 +30,7 @@ public class UserDao1ImplUnitTest {
 
     @Test
     public void deleteUserTest() throws Exception {
+        userDao.getUsers().clear();
         saveUserTest();
         userDao.deleteUser(user);
         assertThat(userDao.getUsers()).isEmpty();

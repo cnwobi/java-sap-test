@@ -26,7 +26,7 @@ public class UserDao1ImplTest {
     public void setUp(){
         userDao = UserDaoImpl.getUserDao();
         users = userDao.getUsers();
-        user = new User();
+        user =new User();
         user.setName("Fake Name");
         user.setEmail("fake@email.com");
         user.getRoles().add("admin");
@@ -37,11 +37,13 @@ public class UserDao1ImplTest {
     }
     @Test
     public void saveUserWithUniqueEmailAndAtLeastOneRoleTest() throws Exception {
+        userDao.getUsers().clear();
         userDao.saveUser(user);
         assertThat(users.get(0)).isEqualToComparingFieldByField(user);
     }
     @Test
     public void saveUserWithoutEmailAndAtLeastOneRoleTest() throws Exception{
+        userDao.getUsers().clear();
         user.setEmail("");
         assertThatExceptionOfType(EmailException.class)
                 .isThrownBy(()->{
@@ -99,29 +101,50 @@ public class UserDao1ImplTest {
 
     }
     @Test
-    public void deleteNonExistingUserTest() throws Exception{
+    public void deleteNonExistingUserTest() throws Exception {
         userDao.getUsers().clear();
         saveUserWithUniqueEmailAndAtLeastOneRoleTest();
         User user1 = new User();
         user1.setEmail("secondfake@gmail.com");
-        user1.setRoles(new HashSet<>(Arrays.asList("admin")));
+
 
         assertThatExceptionOfType(UserNotFoundException.class)
                 .isThrownBy(() -> userDao.deleteUser(user1))
-                .withMessage(user1.toString()+" does not exist and cannot be deleted");
+                .withMessage("User with email address " +user1.getEmail()+" does not exist and cannot be deleted");
     }
+@Test
+public void deleteUserWithEmptyEmailParameterTest() throws Exception{
+        userDao.getUsers().clear();
+        saveUserWithNonUniqueEmailAndAtLeastOneRoleTest();
+    User user1 = new User();
+    user1.setEmail("");
+    assertThatExceptionOfType(EmailException.class)
+            .isThrownBy(() -> userDao.deleteUser(user1))
+            .withMessage("Please provide a valid email address");
 
+}
+@Test
+    public void deleteUserWithNullEmailParameterTest() throws Exception {
+        userDao.getUsers().clear();
+    saveUserWithNonUniqueEmailAndAtLeastOneRoleTest();
+    User user1 = new User();
+    user1.setEmail(null);
 
+    assertThatExceptionOfType(EmailException.class)
+            .isThrownBy(() -> userDao.deleteUser(user1))
+            .withMessage("Please provide a valid email address");
+    }
 
     @Test
     public void updateUserWithNewEmailAndValidRoleTest() throws Exception {
         userDao.getUsers().clear();
         userDao.saveUser(user);
         String updateName = "Updated fake name";
-        User toUpdate = new User();
-        toUpdate.setEmail(user.getEmail());
-        toUpdate.setRoles(user.getRoles());
-        toUpdate.setName(updateName);
+        User toUpdate =new User();
+               toUpdate .setName(updateName);
+               toUpdate .setRoles(user.getRoles());
+                toUpdate.setEmail(user.getEmail());
+
         userDao.updateUser(toUpdate);
 
         assertThat(userDao.getUsers()).hasSize(1);
@@ -134,9 +157,11 @@ public class UserDao1ImplTest {
         userDao.saveUser(user);
         String updateName = "Updated fake name";
         User toUpdate = new User();
-        toUpdate.setEmail("");
-        toUpdate.setRoles(user.getRoles());
-        toUpdate.setName(updateName);
+              toUpdate  .setEmail("");
+                toUpdate.setName(updateName);
+               toUpdate .setRoles(user.getRoles());
+
+
 
         assertThatExceptionOfType(UserNotFoundException.class)
                 .isThrownBy(() -> userDao.updateUser(toUpdate))

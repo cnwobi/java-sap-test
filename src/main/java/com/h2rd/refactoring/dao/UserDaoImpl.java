@@ -28,8 +28,8 @@ public class UserDaoImpl implements UserDao {
         return userDao;
    }
     @Override
-    public void saveUser(User user) throws Exception {
-        if (user.getEmail().isEmpty()) throw new EmailException("A valid email is required to add user");
+    public void saveUser(User user) throws EmailException, RoleException {
+        if ( user.getEmail() == null || user.getEmail().isEmpty() ) throw new EmailException("A valid email is required to add user");
         if (!userEmailIsUnique(user)) throw new EmailException("Email provided already exists on record");
         if (!userHasAtLeastOneRole(user)) throw new RoleException("User must have at least one role");
         userDao.getUsers().add(user);
@@ -62,9 +62,13 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void deleteUser(User userToDelete) throws UserNotFoundException {
-        if (!userExists(userToDelete))
-            throw new UserNotFoundException(userToDelete.toString() + " does not exist and cannot be deleted");
+    public void deleteUser(User userToDelete) throws UserNotFoundException, EmailException {
+       if(userToDelete.getEmail() == null|| userToDelete.getEmail().isEmpty() ){
+           throw new EmailException("Please provide a valid email address");
+       }
+        if (!userExists(userToDelete)) {
+            throw new UserNotFoundException("User with email address " + userToDelete.getEmail() + " does not exist and cannot be deleted");
+        }
          users.removeIf(user -> user.getEmail().equalsIgnoreCase(userToDelete.getEmail()));
 
     }

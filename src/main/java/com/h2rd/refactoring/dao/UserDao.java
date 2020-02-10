@@ -10,7 +10,7 @@ import java.util.List;
 public interface UserDao {
     void saveUser(User user) throws Exception;
     List<User> getUsers();
-    void deleteUser(User userToDelete) throws UserNotFoundException;
+    void deleteUser(User userToDelete) throws UserNotFoundException, EmailException;
     void updateUser(User userToUpdate) throws UserNotFoundException, RoleException, EmailException;
     User findUserByEmail(String email) throws UserNotFoundException, EmailException;
 

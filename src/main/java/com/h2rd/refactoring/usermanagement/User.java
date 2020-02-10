@@ -1,5 +1,10 @@
 package com.h2rd.refactoring.usermanagement;
 
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Collections;
 import java.util.HashSet;
@@ -7,27 +12,19 @@ import java.util.List;
 import java.util.Set;
 
 @XmlRootElement
+@NoArgsConstructor
+
+@Getter
+@Setter
+
+
 public class User {
 
     private String name;
     private String email;
     private Set<String> roles;
 
-    public String getName() {
-        return name;
-    }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
     public Set<String> getRoles() {
         if(roles == null) return roles = Collections.synchronizedSet(new HashSet<>());
