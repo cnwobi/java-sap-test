@@ -23,6 +23,7 @@ public class UserDao1ImplUnitTest {
 
     @Test
     public void saveUserTest() throws Exception {
+        userDao.getUsers().clear();
         userDao.saveUser(user);
         assertThat(userDao.getUsers()).isNotEmpty();
     }
