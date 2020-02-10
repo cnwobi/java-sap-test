@@ -1,6 +1,7 @@
 package com.h2rd.refactoring.usermanagement.web;
 
 import com.h2rd.refactoring.usermanagement.dao.UserDao;
+import com.h2rd.refactoring.usermanagement.dao.UserDaoImpl;
 import com.h2rd.refactoring.usermanagement.exception.EmailException;
 import com.h2rd.refactoring.usermanagement.exception.ResponseMessage;
 import com.h2rd.refactoring.usermanagement.exception.RoleException;
@@ -25,8 +26,8 @@ public class UserResource{
 
 
    /* private UserDao userDao = UserDaoImpl.getUserDao();*/
-    private ApplicationContext context = new ClassPathXmlApplicationContext("application-config.xml");
-    private UserDao userDao = (UserDao) context.getBean("userDao");
+   // private ApplicationContext context = new ClassPathXmlApplicationContext("application-config.xml");
+    private UserDao userDao = new UserDaoImpl();
 
 
     @POST
