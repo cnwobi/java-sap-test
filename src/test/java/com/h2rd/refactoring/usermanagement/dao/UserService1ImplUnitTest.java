@@ -1,14 +1,16 @@
 package com.h2rd.refactoring.usermanagement.dao;
 
 import com.h2rd.refactoring.usermanagement.domain.User;
+import com.h2rd.refactoring.usermanagement.service.UserService;
+import com.h2rd.refactoring.usermanagement.service.UserServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UserDao1ImplUnitTest {
+public class UserService1ImplUnitTest {
 
-    private UserDao userDao;
+    private UserService userService;
     private User user;
 
     @Before
@@ -18,22 +20,22 @@ public class UserDao1ImplUnitTest {
         user.setEmail("fake@email.com");
         user.getRoles().add("admin");
         user.getRoles().add("masters");
-        userDao = new UserDaoImpl();
+        userService = new UserServiceImpl();
     }
 
     @Test
     public void saveUserTest() throws Exception {
-        userDao.getUsers().clear();
-        userDao.saveUser(user);
-        assertThat(userDao.getUsers()).isNotEmpty();
+        userService.getUsers().clear();
+        userService.saveUser(user);
+        assertThat(userService.getUsers()).isNotEmpty();
     }
 
     @Test
     public void deleteUserTest() throws Exception {
-        userDao.getUsers().clear();
+        userService.getUsers().clear();
         saveUserTest();
-        userDao.deleteUser(user);
-        assertThat(userDao.getUsers()).isEmpty();
+        userService.deleteUser(user);
+        assertThat(userService.getUsers()).isEmpty();
 
     }
 }

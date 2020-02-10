@@ -1,8 +1,7 @@
 package com.h2rd.refactoring.usermanagement.web;
 
 import com.h2rd.refactoring.usermanagement.config.Context;
-import com.h2rd.refactoring.usermanagement.dao.UserDao;
-import com.h2rd.refactoring.usermanagement.dao.UserDaoImpl;
+import com.h2rd.refactoring.usermanagement.service.UserService;
 import com.h2rd.refactoring.usermanagement.exception.EmailException;
 import com.h2rd.refactoring.usermanagement.exception.ResponseMessage;
 import com.h2rd.refactoring.usermanagement.exception.RoleException;
@@ -14,12 +13,7 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
@@ -34,7 +28,7 @@ public class UserResource{
    private ApplicationContext context = new ClassPathXmlApplicationContext("application-config.xml");
 
     private UserDao userDao = (UserDao) context.getAutowireCapableBeanFactory();*/
-    private UserDao userDao = (UserDao) Context.getContext().getBean("userDao");
+    private UserService userService = (UserService) Context.getContext().getBean("userDao");
 
 
 
@@ -51,7 +45,7 @@ public class UserResource{
         user.setEmail(email);
        user.setRoles(rolesSet(roles));
        try {
-           userDao.saveUser(user);
+           userService.saveUser(user);
        }
        catch (EmailException | RoleException exception){
            ResponseMessage e = new ResponseMessage();
@@ -75,7 +69,7 @@ public class UserResource{
                 .name(name).build();
 */
 User user =  new User();
-        userDao.updateUser(user);
+        userService.updateUser(user);
         return Response.ok().entity(user).build();
     }
 
@@ -90,7 +84,7 @@ User user =  new User();
         user.setEmail(email);
 
        try{
-           userDao.deleteUser(user);
+           userService.deleteUser(user);
        }
         catch (UserNotFoundException e){
            responseMessage.setMessage(e.getMessage());
@@ -112,7 +106,7 @@ User user =  new User();
     @Path("/find")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUsers() throws Exception {
-            List<User> users = userDao.getUsers();
+            List<User> users = userService.getUsers();
       if(users.isEmpty()) {
           ResponseMessage e = new ResponseMessage();
           e.setStatus(200);
@@ -129,7 +123,7 @@ User user =  new User();
     public Response findUser(@QueryParam("email") String email) throws UserNotFoundException, EmailException {
 
 
-        User user = userDao.findUserByEmail(email);
+        User user = userService.findUserByEmail(email);
         return Response.ok().entity(user).build();
     }
 
