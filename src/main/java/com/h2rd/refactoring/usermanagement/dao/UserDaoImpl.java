@@ -14,26 +14,19 @@ import java.util.Optional;
 @Repository
 public class UserDaoImpl implements UserDao {
 
-    private static UserDao userDao;
+
     private List<User> users = Collections.synchronizedList(new ArrayList<>());
 
 
 
 
-   public UserDaoImpl(){
 
-   }
-
-   public static UserDao getUserDao(){
-        if(userDao == null) userDao = new UserDaoImpl();
-        return userDao;
-   }
     @Override
     public void saveUser(User user) throws EmailException, RoleException {
         if ( user.getEmail() == null || user.getEmail().isEmpty() ) throw new EmailException("A valid email is required to add user");
         if (!userEmailIsUnique(user)) throw new EmailException("Email provided already exists on record");
         if (!userHasAtLeastOneRole(user)) throw new RoleException("User must have at least one role");
-        userDao.getUsers().add(user);
+        users.add(user);
 
 
     }
@@ -43,7 +36,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     private boolean userEmailIsUnique(User user) {
-        List<User> users = userDao.getUsers();
+
         Optional<User> optionalUser = users.stream()
                 .filter(user1 -> user1.getEmail().equals(user.getEmail())).findFirst();
 

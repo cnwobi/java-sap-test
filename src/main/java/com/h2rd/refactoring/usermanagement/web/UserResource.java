@@ -27,8 +27,11 @@ public class UserResource{
 
    /* private UserDao userDao = UserDaoImpl.getUserDao();*/
    // private ApplicationContext context = new ClassPathXmlApplicationContext("application-config.xml");
-    private UserDao userDao = new UserDaoImpl();
+    private UserDao userDao;
 
+    public UserResource(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
     @POST
     @Path("/add")
