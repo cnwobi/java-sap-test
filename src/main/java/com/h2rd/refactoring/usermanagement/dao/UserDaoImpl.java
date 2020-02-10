@@ -12,22 +12,13 @@ import java.util.*;
 
 public class UserDaoImpl implements UserDao {
 
-
-
-
-
     private Map<String,User> users = Collections.synchronizedMap(new HashMap<>());
-
-
-
     @Override
     public void saveUser(User user) throws EmailException, RoleException {
         if ( user.getEmail() == null || user.getEmail().isEmpty() ) throw new EmailException("A valid email is required to add user");
         if (!userEmailIsUnique(user)) throw new EmailException("Email provided already exists on record");
         if (!userHasAtLeastOneRole(user)) throw new RoleException("A user must have at least one role");
         users.put(user.getEmail(),user);
-
-
     }
 
     @Override
@@ -89,10 +80,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public User findUserByEmail(String email) throws UserNotFoundException, EmailException {
-        Optional<User> optionalUser = findOptionalUserByEmail(email);
-
-
-        return findOptionalUserByEmail(email).orElseThrow(() -> new UserNotFoundException("User with email address " + email + " does not exist on record"));
+              return findOptionalUserByEmail(email).orElseThrow(() -> new UserNotFoundException("User with email address " + email + " does not exist on record"));
     }
 
     @Override

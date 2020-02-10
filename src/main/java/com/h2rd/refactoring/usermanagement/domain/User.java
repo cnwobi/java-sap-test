@@ -1,9 +1,6 @@
 package com.h2rd.refactoring.usermanagement.domain;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Collections;
@@ -16,7 +13,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-
+@ToString
 
 public class User {
 
@@ -38,12 +35,5 @@ public class User {
 
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", roles=" + roles +
-                '}';
-    }
+
 }
