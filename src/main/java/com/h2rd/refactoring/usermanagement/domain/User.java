@@ -1,4 +1,4 @@
-package com.h2rd.refactoring.usermanagement;
+package com.h2rd.refactoring.usermanagement.domain;
 
 import lombok.Builder;
 import lombok.Getter;

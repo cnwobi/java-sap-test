@@ -1,4 +1,4 @@
-package com.h2rd.refactoring.exception;
+package com.h2rd.refactoring.usermanagement.exception;
 
 import lombok.Data;
 

@@ -1,11 +1,10 @@
-package com.h2rd.refactoring.dao;
+package com.h2rd.refactoring.usermanagement.dao;
 
-import com.h2rd.refactoring.usermanagement.User;
+import com.h2rd.refactoring.usermanagement.domain.User;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
 
 public class UserDao1ImplUnitTest {
 

@@ -1,11 +1,11 @@
 package com.h2rd.refactoring.service;
 
-import com.h2rd.refactoring.dao.UserDao;
-import com.h2rd.refactoring.dao.UserDaoImpl;
-import com.h2rd.refactoring.exception.EmailException;
-import com.h2rd.refactoring.exception.RoleException;
-import com.h2rd.refactoring.exception.UserNotFoundException;
-import com.h2rd.refactoring.usermanagement.User;
+import com.h2rd.refactoring.usermanagement.dao.UserDao;
+import com.h2rd.refactoring.usermanagement.dao.UserDaoImpl;
+import com.h2rd.refactoring.usermanagement.exception.EmailException;
+import com.h2rd.refactoring.usermanagement.exception.RoleException;
+import com.h2rd.refactoring.usermanagement.exception.UserNotFoundException;
+import com.h2rd.refactoring.usermanagement.domain.User;
 import org.junit.Before;
 import org.junit.Test;
 

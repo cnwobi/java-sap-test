@@ -7,15 +7,15 @@ import java.util.HashSet;
 
 import javax.ws.rs.core.Response;
 
-import com.h2rd.refactoring.exception.EmailException;
-import com.h2rd.refactoring.exception.RoleException;
-import com.h2rd.refactoring.exception.UserNotFoundException;
+import com.h2rd.refactoring.usermanagement.exception.EmailException;
+import com.h2rd.refactoring.usermanagement.exception.RoleException;
+import com.h2rd.refactoring.usermanagement.exception.UserNotFoundException;
 import junit.framework.Assert;
 
 import org.junit.Test;
 
-import com.h2rd.refactoring.usermanagement.User;
-import com.h2rd.refactoring.web.UserResource;
+import com.h2rd.refactoring.usermanagement.domain.User;
+import com.h2rd.refactoring.usermanagement.web.UserResource;
 
 public class UserIntegrationTest {
 	

@@ -1,12 +1,11 @@
-package com.h2rd.refactoring.web;
+package com.h2rd.refactoring.usermanagement.web;
 
-import com.h2rd.refactoring.dao.UserDao;
-import com.h2rd.refactoring.dao.UserDaoImpl;
-import com.h2rd.refactoring.exception.EmailException;
-import com.h2rd.refactoring.exception.ResponseMessage;
-import com.h2rd.refactoring.exception.RoleException;
-import com.h2rd.refactoring.exception.UserNotFoundException;
-import com.h2rd.refactoring.usermanagement.User;
+import com.h2rd.refactoring.usermanagement.dao.UserDao;
+import com.h2rd.refactoring.usermanagement.exception.EmailException;
+import com.h2rd.refactoring.usermanagement.exception.ResponseMessage;
+import com.h2rd.refactoring.usermanagement.exception.RoleException;
+import com.h2rd.refactoring.usermanagement.exception.UserNotFoundException;
+import com.h2rd.refactoring.usermanagement.domain.User;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.GenericEntity;
@@ -15,7 +14,6 @@ import javax.ws.rs.core.Response;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;

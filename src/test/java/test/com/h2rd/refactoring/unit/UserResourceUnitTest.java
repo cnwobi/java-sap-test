@@ -1,9 +1,9 @@
 /*
 package test.com.h2rd.refactoring.unit;
 
-import com.h2rd.refactoring.usermanagement.User;
+import com.h2rd.refactoring.usermanagement.domain.User;
 import com.h2rd.refactoring.usermanagement.UserDao1;
-import com.h2rd.refactoring.web.UserResource;
+import com.h2rd.refactoring.usermanagement.web.UserResource;
 import junit.framework.Assert;
 import org.junit.Test;
 

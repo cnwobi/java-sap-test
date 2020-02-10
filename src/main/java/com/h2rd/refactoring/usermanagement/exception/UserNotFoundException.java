@@ -1,4 +1,4 @@
-package com.h2rd.refactoring.exception;
+package com.h2rd.refactoring.usermanagement.exception;
 
 public class UserNotFoundException extends Exception {
     public UserNotFoundException(String message) {

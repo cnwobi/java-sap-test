@@ -1,9 +1,9 @@
-package com.h2rd.refactoring.dao;
+package com.h2rd.refactoring.usermanagement.dao;
 
-import com.h2rd.refactoring.exception.EmailException;
-import com.h2rd.refactoring.exception.RoleException;
-import com.h2rd.refactoring.exception.UserNotFoundException;
-import com.h2rd.refactoring.usermanagement.User;
+import com.h2rd.refactoring.usermanagement.exception.EmailException;
+import com.h2rd.refactoring.usermanagement.exception.RoleException;
+import com.h2rd.refactoring.usermanagement.exception.UserNotFoundException;
+import com.h2rd.refactoring.usermanagement.domain.User;
 
 import java.util.List;
 
