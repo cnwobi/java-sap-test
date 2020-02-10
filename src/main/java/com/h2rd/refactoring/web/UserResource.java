@@ -1,6 +1,10 @@
 package com.h2rd.refactoring.web;
 
-import com.h2rd.refactoring.service.UserDao;
+import com.h2rd.refactoring.dao.UserDao;
+import com.h2rd.refactoring.dao.UserDaoImpl;
+import com.h2rd.refactoring.exception.EmailException;
+import com.h2rd.refactoring.exception.RoleException;
+import com.h2rd.refactoring.exception.UserNotFoundException;
 import com.h2rd.refactoring.usermanagement.User;
 
 import javax.ws.rs.*;
@@ -8,7 +12,7 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.h2rd.refactoring.usermanagement.UserDao1;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,32 +22,24 @@ import java.util.Set;
 @Repository
 public class UserResource{
 
-    public com.h2rd.refactoring.usermanagement.UserDao userDao;
 
-    private UserDao userDao;
-@Autowired
-    public UserResource(UserDao userDao) {
-        this.userDao = userDao;
-    }
 
-    public UserResource() {
+    private UserDao userDao = UserDaoImpl.getUserDao();
 
-    }
 
     @GET
     @Path("add/")
     public Response addUser(@QueryParam("name") String name,
                             @QueryParam("email") String email,
-                            @QueryParam("role") Set<String> roles) {
+                            @QueryParam("role") Set<String> roles) throws Exception {
+
 
         User user = new User();
         user.setName(name);
         user.setEmail(email);
        // user.setRoles(roles);
 
-        if (userDao == null) {
-            userDao = com.h2rd.refactoring.usermanagement.UserDao.getUserDao();
-        }
+
 
         userDao.saveUser(user);
         return Response.ok().entity(user).build();
@@ -53,16 +49,14 @@ public class UserResource{
     @Path("update/")
     public Response updateUser(@QueryParam("name") String name,
                                @QueryParam("email") String email,
-                               @QueryParam("role") Set<String> roles) {
+                               @QueryParam("role") Set<String> roles) throws UserNotFoundException, RoleException, EmailException {
 
         User user = new User();
         user.setName(name);
         user.setEmail(email);
         //user.setRoles(roles);
 
-        if (userDao == null) {
-            userDao = com.h2rd.refactoring.usermanagement.UserDao.getUserDao();
-        }
+
 
         userDao.updateUser(user);
         return Response.ok().entity(user).build();
@@ -72,15 +66,13 @@ public class UserResource{
     @Path("delete/")
     public Response deleteUser(@QueryParam("name") String name,
                                @QueryParam("email") String email,
-                               @QueryParam("role") List<String> roles) {
+                               @QueryParam("role") List<String> roles) throws UserNotFoundException {
         User user = new User();
         user.setName(name);
         user.setEmail(email);
       //  user.setRoles(roles);
 
-        if (userDao == null) {
-            userDao = com.h2rd.refactoring.usermanagement.UserDao.getUserDao();
-        }
+
 
         userDao.deleteUser(user);
         return Response.ok().entity(user).build();
@@ -90,7 +82,7 @@ public class UserResource{
     @Path("/find")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUsers() {
-        userDao = com.h2rd.refactoring.usermanagement.UserDao.getUserDao();
+
 
         List<User> users = userDao.getUsers();
        /* if (userDao == null) {
@@ -110,13 +102,10 @@ public class UserResource{
 
     @GET
     @Path("search/")
-    public Response findUser(@QueryParam("name") String name) {
+    public Response findUser(@QueryParam("email") String email) throws UserNotFoundException, EmailException {
 
-        if (userDao == null) {
-            userDao = com.h2rd.refactoring.usermanagement.UserDao.getUserDao();
-        }
 
-        User user = userDao.findUser(name);
+        User user = userDao.findUserByEmail(email);
         return Response.ok().entity(user).build();
     }
 }

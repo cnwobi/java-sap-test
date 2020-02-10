@@ -6,6 +6,9 @@ import java.util.HashSet;
 
 import javax.ws.rs.core.Response;
 
+import com.h2rd.refactoring.exception.EmailException;
+import com.h2rd.refactoring.exception.RoleException;
+import com.h2rd.refactoring.exception.UserNotFoundException;
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -16,7 +19,7 @@ import com.h2rd.refactoring.web.UserResource;
 public class UserIntegrationTest {
 	
 	@Test
-	public void createUserTest() {
+	public void createUserTest() throws Exception {
 		UserResource userResource = new UserResource();
 		
 		User integration = new User();
@@ -29,7 +32,7 @@ public class UserIntegrationTest {
 	}
 
 	@Test
-	public void updateUserTest() {
+	public void updateUserTest() throws Exception {
 		UserResource userResource = new UserResource();
 		
 		createUserTest();

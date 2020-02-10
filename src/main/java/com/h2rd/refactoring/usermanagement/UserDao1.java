@@ -2,17 +2,17 @@ package com.h2rd.refactoring.usermanagement;
 
 import java.util.ArrayList;
 
-public class UserDao {
+public class UserDao1 {
 
     public ArrayList<User> users;
 
-    public static UserDao userDao;
+    public static UserDao1 userDao1;
 
-    public static UserDao getUserDao() {
-        if (userDao == null) {
-            userDao = new UserDao();
+    public static UserDao1 getUserDao1() {
+        if (userDao1 == null) {
+            userDao1 = new UserDao1();
         }
-        return userDao;
+        return userDao1;
     }
 
     public void saveUser(User user) {

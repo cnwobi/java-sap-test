@@ -1,5 +1,6 @@
 package com.h2rd.refactoring.service;
 
+import com.h2rd.refactoring.dao.UserDao;
 import com.h2rd.refactoring.dao.UserDaoImpl;
 import com.h2rd.refactoring.exception.EmailException;
 import com.h2rd.refactoring.exception.RoleException;
@@ -15,22 +16,22 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-public class UserDaoImplTest {
-    private com.h2rd.refactoring.dao.UserDao userDao;
+public class UserDao1ImplTest {
+
     private List<User> users;
     private User user;
     private UserDao userDao;
 
     @Before
     public void setUp(){
-        userDao = userDao.getUserDao();
+        userDao = UserDaoImpl.getUserDao();
         users = userDao.getUsers();
         user = new User();
         user.setName("Fake Name");
         user.setEmail("fake@email.com");
         user.getRoles().add("admin");
         user.getRoles().add("masters");
-        userDao = new UserDaoImpl(userDao);
+
 
 
     }
@@ -51,6 +52,7 @@ public class UserDaoImplTest {
     }
     @Test
     public void saveUserWithNonUniqueEmailAndAtLeastOneRoleTest() throws Exception{
+        userDao.getUsers().clear();
         userDao.saveUser(user);
         User user1 = new User();
         user1.setEmail(user.getEmail());
@@ -68,6 +70,7 @@ public class UserDaoImplTest {
 
     @Test
     public  void saveUserWithUniqueEmailAndNoRoleTest() throws Exception{
+        userDao.getUsers().clear();
         user.getRoles().clear();
         assertThatExceptionOfType(RoleException.class)
                 .isThrownBy(() ->{
@@ -77,12 +80,14 @@ public class UserDaoImplTest {
 
     @Test
     public void getUsersTest() throws Exception {
+        userDao.getUsers().clear();
         userDao.saveUser(user);
-        assertThat(userDao.getUsers()).isEqualTo(userDao.getUsers());
+        assertThat(userDao.getUsers()).contains(user);
     }
 
     @Test
     public void deleteExistingUserTest() throws Exception {
+        userDao.getUsers().clear();
         saveUserWithUniqueEmailAndAtLeastOneRoleTest();
         assertThat(userDao.getUsers()).contains(user);
         User user1 = new User();
@@ -95,6 +100,7 @@ public class UserDaoImplTest {
     }
     @Test
     public void deleteNonExistingUserTest() throws Exception{
+        userDao.getUsers().clear();
         saveUserWithUniqueEmailAndAtLeastOneRoleTest();
         User user1 = new User();
         user1.setEmail("secondfake@gmail.com");
@@ -109,6 +115,7 @@ public class UserDaoImplTest {
 
     @Test
     public void updateUserWithNewEmailAndValidRoleTest() throws Exception {
+        userDao.getUsers().clear();
         userDao.saveUser(user);
         String updateName = "Updated fake name";
         User toUpdate = new User();
@@ -123,6 +130,7 @@ public class UserDaoImplTest {
     }
     @Test
     public void updateUserWithInvalidEmailAndValidRoleTest() throws Exception{
+        userDao.getUsers().clear();
         userDao.saveUser(user);
         String updateName = "Updated fake name";
         User toUpdate = new User();
