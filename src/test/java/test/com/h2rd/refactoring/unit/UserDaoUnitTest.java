@@ -100,8 +100,7 @@ public class UserDaoUnitTest {
     }
     @Test
     public void deleteNonExistingUserTest() throws Exception {
-        userDao.getUsers().clear();
-        saveUserWithUniqueEmailAndAtLeastOneRoleTest();
+      userDao.saveUser(user);
         User user1 = new User();
         user1.setEmail("secondfake@gmail.com");
 
@@ -112,8 +111,7 @@ public class UserDaoUnitTest {
     }
 @Test
 public void deleteUserWithEmptyEmailParameterTest() throws Exception{
-        userDao.getUsers().clear();
-        saveUserWithNonUniqueEmailAndAtLeastOneRoleTest();
+
     User user1 = new User();
     user1.setEmail("");
     assertThatExceptionOfType(EmailException.class)
@@ -170,7 +168,7 @@ public void deleteUserWithEmptyEmailParameterTest() throws Exception{
 
     @Test
     public void findNonExistingUserByEmailTest() throws Exception {
-        saveUserWithUniqueEmailAndAtLeastOneRoleTest();
+        userDao.saveUser(user);
         String searchEmail = "chuka@nwobi.com";
         assertThatExceptionOfType(UserNotFoundException.class)
                 .isThrownBy(() ->{
@@ -180,7 +178,7 @@ public void deleteUserWithEmptyEmailParameterTest() throws Exception{
     }
     @Test
     public void findExistingUserByEmailTest() throws Exception {
-        saveUserWithUniqueEmailAndAtLeastOneRoleTest();
+       userDao.saveUser(user);
         String searchEmail = user.getEmail();
         User user1 = userDao.findUserByEmail(searchEmail);
 
@@ -190,7 +188,7 @@ public void deleteUserWithEmptyEmailParameterTest() throws Exception{
 
     @Test
     public void findNonExistingUserByNullEmailValueTest() throws Exception {
-        saveUserWithNonUniqueEmailAndAtLeastOneRoleTest();
+
         String searchEmail = null;
         assertThatExceptionOfType(EmailException.class)
                 .isThrownBy(() ->{
@@ -213,7 +211,7 @@ public void deleteUserWithEmptyEmailParameterTest() throws Exception{
 
     @Test
     public void updateUserWithoutAnInvalidEmailAddressTest() throws Exception {
-        saveUserWithUniqueEmailAndAtLeastOneRoleTest();
+        userDao.saveUser(user);
         User user1 = new User();
         assertThatExceptionOfType(EmailException.class)
                 .isThrownBy(() ->{

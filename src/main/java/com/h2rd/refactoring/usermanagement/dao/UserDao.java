@@ -17,4 +17,5 @@ public interface UserDao {
 
     List<User> findUsers(String name);
     List<User> findAllUsers();
+
 }

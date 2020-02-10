@@ -28,9 +28,9 @@ public class UserResource {
 
     {
         responseMessage = new ResponseMessage();
-        userDao = (UserDao) Context.getContext().getBean("userService");
+        userDao = (UserDao) Context.getContext().getBean("userDao");
     }
-//for testing
+
     public UserResource(UserDao userDao) {
         if(userDao != null) this.userDao = userDao;
     }
@@ -128,7 +128,7 @@ public class UserResource {
     @Path("/find")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUsers() throws Exception {
-        List<User> users = userDao.findAllUsers();
+      List<User> users = userDao.findAllUsers();
         if (users.isEmpty()) {
 
             responseMessage.setStatus(200);

@@ -8,6 +8,9 @@
 
     <bean id="userDao" class="com.h2rd.refactoring.usermanagement.dao.UserDaoImpl" />
 
-    <bean id="userService" class="com.h2rd.refactoring.usermanagement.dao.UserDaoImpl" />
+
+
+    <bean id="userResource" class="com.h2rd.refactoring.usermanagement.web.UserResource" />
+
 
 </beans>
