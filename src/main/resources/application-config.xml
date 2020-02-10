@@ -9,7 +9,7 @@
 
 <!--//<context:component-scan base-package="com.h2rd"/>-->
 
-    <bean id="userResource" class="com.h2rd.refactoring.usermanagement.web.UserResource" />
+
     <bean id="userDao" class="com.h2rd.refactoring.usermanagement.dao.UserDaoImpl" />
 
 

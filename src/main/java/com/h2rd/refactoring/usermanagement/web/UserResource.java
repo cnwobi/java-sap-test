@@ -31,10 +31,14 @@ public class UserResource {
         userDao = (UserDao) Context.getContext().getBean("userDao");
     }
 
-  /*  public UserResource(UserDao userDao) {
+    //to provide fresh userDao for testing;
+    public UserResource(UserDao userDao) {
         if(userDao != null) this.userDao = userDao;
     }
-*/
+
+    public UserResource() {
+
+    }
 
 
     @POST
@@ -49,7 +53,9 @@ public class UserResource {
         user.setName(name);
         user.setEmail(email);
         user.setRoles(convertRoleStringToRoleSet(roles));
+
         try {
+
             userDao.saveUser(user);
         } catch (EmailException | RoleException exception) {
 
@@ -73,11 +79,12 @@ public class UserResource {
         User user = new User();
         user.setName(name);
         user.setEmail(email);
-        user.setRoles(convertRoleStringToRoleSet(roles));
-        User updateUser;
+
+        User updatedUser;
 
         try {
-            updateUser = userDao.updateUser(user);
+            user.setRoles(convertRoleStringToRoleSet(roles));
+            updatedUser = userDao.updateUser(user);
 
 
         } catch (EmailException e) {
@@ -92,7 +99,7 @@ public class UserResource {
             return Response.status(404).entity(responseMessage).build();
         }
 
-        return Response.ok().entity(updateUser).build();
+        return Response.ok().entity(updatedUser).build();
     }
 
     @DELETE
@@ -162,14 +169,13 @@ public class UserResource {
         return Response.ok().entity(user).build();
     }
 
-    private Set<String> convertRoleStringToRoleSet(String roles) {
-
+    private Set<String> convertRoleStringToRoleSet(String roles) throws RoleException {
         Set<String> roleSet = Collections.synchronizedSet(new HashSet<>());
-        if (roles != null) {
-            String[] stringsOfRoles = roles.split(",");
-            roleSet.addAll(Arrays.asList(stringsOfRoles));
+        if(roles == null ||roles.isEmpty()) return roleSet;
 
-        }
+
+        String[] stringsOfRoles = roles.split(",");
+        roleSet.addAll(Arrays.asList(stringsOfRoles));
 
         return roleSet;
     }

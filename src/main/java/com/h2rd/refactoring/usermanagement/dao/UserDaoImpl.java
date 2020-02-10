@@ -24,7 +24,7 @@ public class UserDaoImpl implements UserDao {
     public void saveUser(User user) throws EmailException, RoleException {
         if ( user.getEmail() == null || user.getEmail().isEmpty() ) throw new EmailException("A valid email is required to add user");
         if (!userEmailIsUnique(user)) throw new EmailException("Email provided already exists on record");
-        if (!userHasAtLeastOneRole(user)) throw new RoleException("User must have at least one role");
+        if (!userHasAtLeastOneRole(user)) throw new RoleException("A user must have at least one role");
         users.put(user.getEmail(),user);
 
 

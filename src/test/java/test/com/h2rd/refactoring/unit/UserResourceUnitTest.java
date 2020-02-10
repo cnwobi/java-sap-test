@@ -56,26 +56,4 @@ public class UserResourceUnitTest {
 
     }
 
-    @Test
-    public void getUsersInDatabaseTest() throws Exception {
-
-        List<User> mockUserList = new ArrayList<>(Collections.singletonList(testUser));
-       doReturn(mockUserList).when(userDao).findAllUsers();
-
-      Response response = userResource.getUsers();
-        GenericEntity<List<User>> genericEntity = (GenericEntity<List<User>>) response.getEntity();
-    List<User> responseList = genericEntity.getEntity();
-
-    assertThat(response.getStatus()).isEqualTo(200);
-    assertThat(responseList).contains(testUser);
-
-  }
-
-  @Test
-  public void deleteUserNonExistingTest() throws UserNotFoundException, EmailException {
-
-
-
-
-  }
 }

@@ -75,7 +75,7 @@ public class UserDaoUnitTest {
         assertThatExceptionOfType(RoleException.class)
                 .isThrownBy(() ->{
                     userDao.saveUser(user);
-                }).withMessage("User must have at least one role");
+                }).withMessage("A user must have at least one role");
     }
 
     @Test
