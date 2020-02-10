@@ -4,6 +4,8 @@ import com.h2rd.refactoring.usermanagement.exception.EmailException;
 import com.h2rd.refactoring.usermanagement.exception.RoleException;
 import com.h2rd.refactoring.usermanagement.exception.UserNotFoundException;
 import com.h2rd.refactoring.usermanagement.domain.User;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -11,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
+@Component
 public class UserDaoImpl implements UserDao {
 
 

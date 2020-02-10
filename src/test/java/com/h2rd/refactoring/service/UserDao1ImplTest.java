@@ -24,7 +24,7 @@ public class UserDao1ImplTest {
 
     @Before
     public void setUp(){
-        userDao = UserDaoImpl.getUserDao();
+        userDao = new UserDaoImpl();
         users = userDao.getUsers();
         user =new User();
         user.setName("Fake Name");

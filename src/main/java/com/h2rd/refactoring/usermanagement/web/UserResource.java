@@ -1,5 +1,6 @@
 package com.h2rd.refactoring.usermanagement.web;
 
+import com.h2rd.refactoring.usermanagement.config.Context;
 import com.h2rd.refactoring.usermanagement.dao.UserDao;
 import com.h2rd.refactoring.usermanagement.dao.UserDaoImpl;
 import com.h2rd.refactoring.usermanagement.exception.EmailException;
@@ -13,25 +14,29 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
 @Path("/users")
-@Repository
+@Controller
+
 public class UserResource{
 
 
 
-   /* private UserDao userDao = UserDaoImpl.getUserDao();*/
-   // private ApplicationContext context = new ClassPathXmlApplicationContext("application-config.xml");
-    private UserDao userDao;
+  /* *//* private UserDao userDao = UserDaoImpl.getUserDao();*//*
+   private ApplicationContext context = new ClassPathXmlApplicationContext("application-config.xml");
 
-    public UserResource(UserDao userDao) {
-        this.userDao = userDao;
-    }
+    private UserDao userDao = (UserDao) context.getAutowireCapableBeanFactory();*/
+    private UserDao userDao = (UserDao) Context.getContext().getBean("userDao");
+
+
 
     @POST
     @Path("/add")
@@ -70,10 +75,6 @@ public class UserResource{
                 .name(name).build();
 */
 User user =  new User();
-
-
-
-
         userDao.updateUser(user);
         return Response.ok().entity(user).build();
     }
