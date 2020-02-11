@@ -68,7 +68,7 @@ public class UserIntegrationTest {
         assertThat(response.getStatus()).isEqualTo(400);
 
         responseBody = (ResponseBody) response.getEntity();
-        assertThat(responseBody.getMessage()).isEqualTo("Email provided already exists on record");
+        assertThat(responseBody.getMessage()).isEqualTo("A user with this email provided already exists on record");
 
     }
     @Test

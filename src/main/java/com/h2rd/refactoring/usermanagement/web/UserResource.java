@@ -13,6 +13,7 @@ import javax.ws.rs.core.Response;
 import com.h2rd.refactoring.usermanagement.exception.email.EmailEmptyOrNullException;
 import com.h2rd.refactoring.usermanagement.exception.email.EmailFormatException;
 import com.h2rd.refactoring.usermanagement.exception.user.UserNotFoundException;
+import com.h2rd.refactoring.usermanagement.exception.user.UserNotUniqueException;
 import org.springframework.stereotype.Controller;
 
 import java.util.*;
@@ -57,7 +58,7 @@ public class UserResource {
         try {
 
             userDao.saveUser(user);
-        } catch (EmailEmptyOrNullException |UserNotFoundException | EmailFormatException | RoleException exception) {
+        } catch (EmailEmptyOrNullException | UserNotUniqueException | EmailFormatException | RoleException exception) {
 
             responseBody.setMessage(exception.getMessage());
             responseBody.setStatus(400);
