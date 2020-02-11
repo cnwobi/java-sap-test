@@ -19,6 +19,8 @@ public class UserDaoImpl implements UserDao {
         if (!emailIsValid(user.getEmail()) ) throw getEmptyOrNullEmailException();
         if (!userEmailIsUnique(user)) throw new EmailEmptyOrNullException("Email provided already exists on record");
         if (!userHasAtLeastOneRole(user)) throw new RoleException("A user must have at least one role");
+        //convert input email to lower case
+        user.setEmail(user.getEmail().toLowerCase());
         users.put(user.getEmail(),user);
     }
 
@@ -32,11 +34,11 @@ public class UserDaoImpl implements UserDao {
     }
 
     private boolean userEmailIsUnique(User user) {
-               return !users.containsKey(user.getEmail());
+               return !users.containsKey(user.getEmail().toLowerCase());
     }
 
     private boolean userExists(User user) {
-      return   users.containsKey(user.getEmail());
+      return   users.containsKey(user.getEmail().toLowerCase());
     }
     private EmailEmptyOrNullException getEmptyOrNullEmailException() {
         String s = "Email address must not be empty";
@@ -54,7 +56,7 @@ public class UserDaoImpl implements UserDao {
             throw new UserNotFoundException("User with email address " + userToDelete.getEmail() + " does not exist and cannot be deleted");
         }
 
-        users.remove(userToDelete.getEmail());
+        users.remove(userToDelete.getEmail().toLowerCase());
 
     }
 
@@ -81,7 +83,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public User findUserByEmail(String email) throws UserNotFoundException, EmailEmptyOrNullException, EmailFormatException {
         if (!emailIsValid(email)) throw getEmptyOrNullEmailException();
-        Optional<User> optionalUser = Optional.ofNullable(users.get(email));
+        Optional<User> optionalUser = Optional.ofNullable(users.get(email.toLowerCase()));
                  return optionalUser.orElseThrow(() -> new UserNotFoundException("User with email address " + email + " does not exist on record"));
     }
 

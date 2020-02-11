@@ -25,6 +25,7 @@ public class UserDaoUnitTest {
     private static final String VALID_EMAIL2 = "secondfake@gmail.com";
     private static final String EMPTY_OR_NULL_EMAIL_EXCEPTION_MESSAGE = "Email address must not be empty";
     private static final String INCORRECTLY_FORMATED_EMAIL = "cdawe";
+    private static final String EXPECTED_INVALID_EMAIL_FORMAT_EXCEPTION_MESSAGE = "Email provided is not of the expected format";
 
     private Map<String, User> users;
     private User user;
@@ -149,14 +150,25 @@ public class UserDaoUnitTest {
 
     @Test
     public void deleteUserWithNullEmailParameterTest() throws Exception {
-        userDao.getUsers().clear();
-        saveUserWithNonUniqueEmailAndAtLeastOneRoleTest();
+
         User user1 = new User();
         user1.setEmail(null);
 
         assertThatExceptionOfType(EmailEmptyOrNullException.class)
                 .isThrownBy(() -> userDao.deleteUser(user1))
                 .withMessage(EMPTY_OR_NULL_EMAIL_EXCEPTION_MESSAGE);
+    }
+    @Test
+    public void deleteUserWithInvalidFormatEmailParameterTest() throws UserNotFoundException, EmailEmptyOrNullException, EmailFormatException {
+        User user = new User();
+        user.setEmail(INCORRECTLY_FORMATED_EMAIL);
+
+        assertThatExceptionOfType(EmailFormatException.class)
+                .isThrownBy(() ->{
+                    userDao.deleteUser(user);
+                }).withMessage(EXPECTED_INVALID_EMAIL_FORMAT_EXCEPTION_MESSAGE);
+
+
     }
 
     @Test
