@@ -72,15 +72,12 @@ public class UserDaoImpl implements UserDao {
       return update;
     }
 
-    private Optional<User> findOptionalUserByEmail(String email) throws  EmailException {
-        if (email == null || email.isEmpty()) throw new EmailException("Please provide a valid email address");
-
-        return Optional.ofNullable(users.get(email));
-    }
 
     @Override
     public User findUserByEmail(String email) throws UserNotFoundException, EmailException {
-              return findOptionalUserByEmail(email).orElseThrow(() -> new UserNotFoundException("User with email address " + email + " does not exist on record"));
+        if (email == null || email.isEmpty()) throw new EmailException("Please provide a valid email address");
+        Optional<User> optionalUser = Optional.ofNullable(users.get(email));
+                 return optionalUser.orElseThrow(() -> new UserNotFoundException("User with email address " + email + " does not exist on record"));
     }
 
     @Override
