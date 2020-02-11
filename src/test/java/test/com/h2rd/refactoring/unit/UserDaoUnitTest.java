@@ -2,9 +2,10 @@ package test.com.h2rd.refactoring.unit;
 
 import com.h2rd.refactoring.usermanagement.dao.UserDao;
 import com.h2rd.refactoring.usermanagement.dao.UserDaoImpl;
-import com.h2rd.refactoring.usermanagement.exception.EmailException;
+import com.h2rd.refactoring.usermanagement.exception.email.EmailEmptyOrNullException;
 import com.h2rd.refactoring.usermanagement.exception.RoleException;
-import com.h2rd.refactoring.usermanagement.exception.UserNotFoundException;
+import com.h2rd.refactoring.usermanagement.exception.email.EmailFormatException;
+import com.h2rd.refactoring.usermanagement.exception.user.UserNotFoundException;
 import com.h2rd.refactoring.usermanagement.domain.User;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,43 +16,67 @@ import static org.assertj.core.api.Assertions.*;
 
 public class UserDaoUnitTest {
 
-    private Map<String,User> users;
+    private static final String ROLE_EXCEPTION_MESSAGE = "A user must have at least one role";
+    private static final String DEFAULT_TEST_USER_EMAIL = "fake@email.com";
+    public static final String DEFAULT_TEST_USER_ROLE1 = "admin";
+    private static final String DEFAULT_TEST_USER_ROLE2 = "masters";
+    private static final String DEFAULT_TEST_USER_NAME = "Fake Name";
+    private static final String FAKE_NAME2 = "Fake Name 2";
+    private static final String VALID_EMAIL2 = "secondfake@gmail.com";
+    private static final String EMPTY_OR_NULL_EMAIL_EXCEPTION_MESSAGE = "Email address must not be empty";
+    private static final String INCORRECTLY_FORMATED_EMAIL = "cdawe";
+
+    private Map<String, User> users;
     private User user;
     private UserDao userDao;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         userDao = new UserDaoImpl();
         users = userDao.getUsers();
-        user =new User();
-        user.setName("Fake Name");
-        user.setEmail("fake@email.com");
-        user.getRoles().add("admin");
-        user.getRoles().add("masters");
-
+        user = new User();
+        user.setName(DEFAULT_TEST_USER_NAME);
+        user.setEmail(DEFAULT_TEST_USER_EMAIL);
+        user.getRoles().add(DEFAULT_TEST_USER_ROLE1);
+        user.getRoles().add(DEFAULT_TEST_USER_ROLE2);
 
 
     }
+
     @Test
-    public void saveUserWithUniqueEmailAndAtLeastOneRoleTest() throws Exception {
+    public void saveUserWithAValidAndUniqueEmailAndAtLeastOneRoleTest() throws Exception {
 
         userDao.saveUser(user);
         User retrievedUser = users.get(user.getEmail());
         assertThat(retrievedUser).isEqualToComparingFieldByField(user);
     }
+@Test
+  public void   saveUserWithIncorrectlyFormattedEmailAndAtLeastOneRoleTest() throws Exception {
+        user.setEmail(INCORRECTLY_FORMATED_EMAIL);
+
+        assertThatExceptionOfType(EmailFormatException.class)
+                .isThrownBy(() ->{
+                    userDao.saveUser(user);
+                }).withMessage("Email provided is not of the expected format");
+
+
+
+}
+
     @Test
-    public void saveUserWithoutEmailAndAtLeastOneRoleTest() throws Exception{
+    public void saveUserWithoutEmailAndAtLeastOneRoleTest() throws Exception {
 
         user.setEmail("");
-        assertThatExceptionOfType(EmailException.class)
-                .isThrownBy(()->{
+        assertThatExceptionOfType(EmailEmptyOrNullException.class)
+                .isThrownBy(() -> {
                     userDao.saveUser(user);
                 })
-                .withMessage("A valid email is required to add user");
+                .withMessage(EMPTY_OR_NULL_EMAIL_EXCEPTION_MESSAGE);
 
     }
+
     @Test
-    public void saveUserWithNonUniqueEmailAndAtLeastOneRoleTest() throws Exception{
+    public void saveUserWithNonUniqueEmailAndAtLeastOneRoleTest() throws Exception {
 
         userDao.saveUser(user);
         User user1 = new User();
@@ -59,8 +84,8 @@ public class UserDaoUnitTest {
         user1.setRoles(user.getRoles());
 
 
-        assertThatExceptionOfType(EmailException.class)
-                .isThrownBy(() ->{
+        assertThatExceptionOfType(EmailEmptyOrNullException.class)
+                .isThrownBy(() -> {
                     userDao.saveUser(user1);
                 })
                 .withMessage("Email provided already exists on record");
@@ -69,13 +94,13 @@ public class UserDaoUnitTest {
     }
 
     @Test
-    public  void saveUserWithUniqueEmailAndNoRoleTest() throws Exception{
+    public void saveUserWithUniqueEmailAndNoRoleTest() throws Exception {
 
         user.getRoles().clear();
         assertThatExceptionOfType(RoleException.class)
-                .isThrownBy(() ->{
+                .isThrownBy(() -> {
                     userDao.saveUser(user);
-                }).withMessage("A user must have at least one role");
+                }).withMessage(ROLE_EXCEPTION_MESSAGE);
     }
 
     @Test
@@ -88,80 +113,83 @@ public class UserDaoUnitTest {
     @Test
     public void deleteExistingUserTest() throws Exception {
         userDao.getUsers().clear();
-        saveUserWithUniqueEmailAndAtLeastOneRoleTest();
+       userDao.saveUser(user);
         assertThat(userDao.getUsers()).containsValue(user);
         User user1 = new User();
-        user1.setEmail("secondfake@gmail.com");
-        user1.setRoles(new HashSet<>(Arrays.asList("admin")));
+        user1.setEmail(VALID_EMAIL2);
+        user1.setRoles(new HashSet<>(Arrays.asList(DEFAULT_TEST_USER_ROLE1)));
         userDao.saveUser(user1);
         userDao.deleteUser(user);
         assertThat(userDao.getUsers()).doesNotContainValue(user);
 
     }
+
     @Test
     public void deleteNonExistingUserTest() throws Exception {
-      userDao.saveUser(user);
+        userDao.saveUser(user);
         User user1 = new User();
-        user1.setEmail("secondfake@gmail.com");
+        user1.setEmail(VALID_EMAIL2);
 
 
         assertThatExceptionOfType(UserNotFoundException.class)
                 .isThrownBy(() -> userDao.deleteUser(user1))
-                .withMessage("User with email address " +user1.getEmail()+" does not exist and cannot be deleted");
+                .withMessage("User with email address " + user1.getEmail() + " does not exist and cannot be deleted");
     }
-@Test
-public void deleteUserWithEmptyEmailParameterTest() throws Exception{
 
-    User user1 = new User();
-    user1.setEmail("");
-    assertThatExceptionOfType(EmailException.class)
-            .isThrownBy(() -> userDao.deleteUser(user1))
-            .withMessage("Please provide a valid email address");
+    @Test
+    public void deleteUserWithEmptyEmailParameterTest() throws Exception {
 
-}
-@Test
+        User user1 = new User();
+        user1.setEmail("");
+        assertThatExceptionOfType(EmailEmptyOrNullException.class)
+                .isThrownBy(() -> userDao.deleteUser(user1))
+                .withMessage(EMPTY_OR_NULL_EMAIL_EXCEPTION_MESSAGE);
+
+    }
+
+    @Test
     public void deleteUserWithNullEmailParameterTest() throws Exception {
         userDao.getUsers().clear();
-    saveUserWithNonUniqueEmailAndAtLeastOneRoleTest();
-    User user1 = new User();
-    user1.setEmail(null);
+        saveUserWithNonUniqueEmailAndAtLeastOneRoleTest();
+        User user1 = new User();
+        user1.setEmail(null);
 
-    assertThatExceptionOfType(EmailException.class)
-            .isThrownBy(() -> userDao.deleteUser(user1))
-            .withMessage("Please provide a valid email address");
+        assertThatExceptionOfType(EmailEmptyOrNullException.class)
+                .isThrownBy(() -> userDao.deleteUser(user1))
+                .withMessage(EMPTY_OR_NULL_EMAIL_EXCEPTION_MESSAGE);
     }
 
     @Test
     public void updateUserWithNewEmailAndValidRoleTest() throws Exception {
         userDao.getUsers().clear();
         userDao.saveUser(user);
-        String updateName = "Updated fake name";
-        User toUpdate =new User();
-               toUpdate .setName(updateName);
-               toUpdate .setRoles(user.getRoles());
-                toUpdate.setEmail(user.getEmail());
+
+        User toUpdate = new User();
+        toUpdate.setName(FAKE_NAME2);
+        toUpdate.setRoles(user.getRoles());
+        toUpdate.setEmail(user.getEmail());
 
         userDao.updateUser(toUpdate);
 
         assertThat(userDao.getUsers()).hasSize(1);
-        assertThat(userDao.getUsers().get(user.getEmail()).getName()).isEqualTo(updateName);
+        assertThat(userDao.getUsers().get(user.getEmail()).getName()).isEqualTo(FAKE_NAME2);
 
     }
+
     @Test
-    public void updateUserWithInvalidEmailAndValidRoleTest() throws Exception{
+    public void updateUserWithInvalidEmailAndValidRoleTest() throws Exception {
         userDao.getUsers().clear();
         userDao.saveUser(user);
         String updateName = "Updated fake name";
         User toUpdate = new User();
-              toUpdate  .setEmail("");
-                toUpdate.setName(updateName);
-               toUpdate .setRoles(user.getRoles());
+        toUpdate.setEmail("");
+        toUpdate.setName(updateName);
+        toUpdate.setRoles(user.getRoles());
 
 
-
-        assertThatExceptionOfType(EmailException.class)
+        assertThatExceptionOfType(EmailEmptyOrNullException.class)
                 .isThrownBy(() -> userDao.updateUser(toUpdate))
-                .withMessage("Please provide a valid email address");
+                .withMessage(EMPTY_OR_NULL_EMAIL_EXCEPTION_MESSAGE);
 
     }
 
@@ -171,14 +199,15 @@ public void deleteUserWithEmptyEmailParameterTest() throws Exception{
         userDao.saveUser(user);
         String searchEmail = "chuka@nwobi.com";
         assertThatExceptionOfType(UserNotFoundException.class)
-                .isThrownBy(() ->{
+                .isThrownBy(() -> {
                     userDao.findUserByEmail(searchEmail);
                 })
-                .withMessage("User with email address "+ searchEmail+ " does not exist on record");
+                .withMessage("User with email address " + searchEmail + " does not exist on record");
     }
+
     @Test
     public void findExistingUserByEmailTest() throws Exception {
-       userDao.saveUser(user);
+        userDao.saveUser(user);
         String searchEmail = user.getEmail();
         User user1 = userDao.findUserByEmail(searchEmail);
 
@@ -189,40 +218,42 @@ public void deleteUserWithEmptyEmailParameterTest() throws Exception{
     @Test
     public void findNonExistingUserByNullEmailValueTest() throws Exception {
 
-        String searchEmail = null;
-        assertThatExceptionOfType(EmailException.class)
-                .isThrownBy(() ->{
-                    userDao.findUserByEmail(searchEmail);
+
+        assertThatExceptionOfType(EmailEmptyOrNullException.class)
+                .isThrownBy(() -> {
+                    userDao.findUserByEmail(null);
                 })
-                .withMessage("Please provide a valid email address");
+                .withMessage(EMPTY_OR_NULL_EMAIL_EXCEPTION_MESSAGE);
     }
+
     @Test
-    public void findNonExistingUserByEmptyEmailValueTest(){
+    public void findNonExistingUserByEmptyEmailValueTest() {
         String searchEmail = "";
-        assertThatExceptionOfType(EmailException.class)
-                .isThrownBy(() ->{
+        assertThatExceptionOfType(EmailEmptyOrNullException.class)
+                .isThrownBy(() -> {
                     userDao.findUserByEmail(searchEmail);
                 })
-                .withMessage("Please provide a valid email address");
+                .withMessage(EMPTY_OR_NULL_EMAIL_EXCEPTION_MESSAGE);
     }
+
     @Test
     public void findUsers() {
     }
 
     @Test
-    public void updateUserWithoutAnInvalidEmailAddressTest() throws Exception {
+    public void updateUserWithANullEmailAddressTest() throws Exception {
         userDao.saveUser(user);
         User user1 = new User();
-        assertThatExceptionOfType(EmailException.class)
-                .isThrownBy(() ->{
+        assertThatExceptionOfType(EmailEmptyOrNullException.class)
+                .isThrownBy(() -> {
                     userDao.updateUser(user1);
                 })
-                .withMessage("Please provide a valid email address");
+                .withMessage(EMPTY_OR_NULL_EMAIL_EXCEPTION_MESSAGE);
     }
 
     @Test
-    public void updateUserWithValidEmailAddressTest() throws Exception{
-        saveUserWithUniqueEmailAndAtLeastOneRoleTest();
+    public void updateExistingUserWithValidEmailAddressTest() throws Exception {
+       userDao.saveUser(user);
         String nameToUpdate = "newest fake Name";
         String role = "sap dev";
         Set<String> roles = Collections.synchronizedSet(new HashSet<>(Arrays.asList(role)));
@@ -230,7 +261,7 @@ public void deleteUserWithEmptyEmailParameterTest() throws Exception{
         user1.setEmail(user.getEmail());
         user1.setRoles(roles);
         user1.setName(nameToUpdate);
-// assert that user is not already update
+// assert that user is not already updated
         assertThat(user.getName()).isNotEqualTo(nameToUpdate);
         assertThat(user.getRoles()).doesNotContain(role);
 
@@ -243,10 +274,6 @@ public void deleteUserWithEmptyEmailParameterTest() throws Exception{
         //assert update occurred
         assertThat(updatedUser.getName()).isEqualTo(nameToUpdate);
         assertThat(updatedUser.getRoles()).contains(role);
-
-    }
-
-    public void updateUserWithValidEmailAddressAndNullName(){
 
     }
 }

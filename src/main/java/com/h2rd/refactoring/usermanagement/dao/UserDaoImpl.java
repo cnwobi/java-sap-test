@@ -1,22 +1,23 @@
 package com.h2rd.refactoring.usermanagement.dao;
 
-import com.h2rd.refactoring.usermanagement.dao.UserDao;
-import com.h2rd.refactoring.usermanagement.exception.EmailException;
+import com.h2rd.refactoring.usermanagement.exception.email.EmailEmptyOrNullException;
+import com.h2rd.refactoring.usermanagement.exception.email.EmailFormatException;
 import com.h2rd.refactoring.usermanagement.exception.RoleException;
-import com.h2rd.refactoring.usermanagement.exception.UserNotFoundException;
+import com.h2rd.refactoring.usermanagement.exception.user.UserNotFoundException;
 import com.h2rd.refactoring.usermanagement.domain.User;
-import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class UserDaoImpl implements UserDao {
 
     private Map<String,User> users = Collections.synchronizedMap(new HashMap<>());
     @Override
-    public void saveUser(User user) throws EmailException, RoleException {
-        if ( user.getEmail() == null || user.getEmail().isEmpty() ) throw new EmailException("A valid email is required to add user");
-        if (!userEmailIsUnique(user)) throw new EmailException("Email provided already exists on record");
+    public void saveUser(User user) throws EmailEmptyOrNullException, RoleException, EmailFormatException {
+        if (!emailIsValid(user.getEmail()) ) throw getEmptyOrNullEmailException();
+        if (!userEmailIsUnique(user)) throw new EmailEmptyOrNullException("Email provided already exists on record");
         if (!userHasAtLeastOneRole(user)) throw new RoleException("A user must have at least one role");
         users.put(user.getEmail(),user);
     }
@@ -37,13 +38,17 @@ public class UserDaoImpl implements UserDao {
     private boolean userExists(User user) {
       return   users.containsKey(user.getEmail());
     }
+    private EmailEmptyOrNullException getEmptyOrNullEmailException() {
+        String s = "Email address must not be empty";
+        return new EmailEmptyOrNullException(s);
+    }
 
 
 
     @Override
-    public void deleteUser(User userToDelete) throws UserNotFoundException, EmailException {
-       if(userToDelete.getEmail() == null|| userToDelete.getEmail().isEmpty() ){
-           throw new EmailException("Please provide a valid email address");
+    public void deleteUser(User userToDelete) throws UserNotFoundException, EmailEmptyOrNullException, EmailFormatException {
+       if(!emailIsValid(userToDelete.getEmail()) ){
+           throw getEmptyOrNullEmailException();
        }
         if (!userExists(userToDelete)) {
             throw new UserNotFoundException("User with email address " + userToDelete.getEmail() + " does not exist and cannot be deleted");
@@ -54,7 +59,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User updateUser(User userToUpdate) throws UserNotFoundException, RoleException, EmailException {
+    public User updateUser(User userToUpdate) throws UserNotFoundException, EmailFormatException,EmailEmptyOrNullException {
         User update = findUserByEmail(userToUpdate.getEmail());
         update.setName(userToUpdate.getName());
 
@@ -63,10 +68,10 @@ public class UserDaoImpl implements UserDao {
             update.setRoles(userToUpdate.getRoles());
         }
 
-        if (!userToUpdate.getEmail().isEmpty() && userToUpdate.getEmail() != null) {
+        if (emailIsValid(userToUpdate.getEmail())) {
             update.setEmail(userToUpdate.getEmail());
         } else {
-            throw new EmailException("Provide a valid email for update");
+            throw getEmptyOrNullEmailException();
         }
 
       return update;
@@ -74,11 +79,13 @@ public class UserDaoImpl implements UserDao {
 
 
     @Override
-    public User findUserByEmail(String email) throws UserNotFoundException, EmailException {
-        if (email == null || email.isEmpty()) throw new EmailException("Please provide a valid email address");
+    public User findUserByEmail(String email) throws UserNotFoundException, EmailEmptyOrNullException, EmailFormatException {
+        if (!emailIsValid(email)) throw getEmptyOrNullEmailException();
         Optional<User> optionalUser = Optional.ofNullable(users.get(email));
                  return optionalUser.orElseThrow(() -> new UserNotFoundException("User with email address " + email + " does not exist on record"));
     }
+
+
 
     @Override
     public List<User> findUsers(String name) {
@@ -99,5 +106,18 @@ public class UserDaoImpl implements UserDao {
                 usersList.add(entry.getValue());
         }
         return usersList;
+    }
+
+    public boolean emailIsValid(String email) throws EmailFormatException {
+         if (email == null || email.isEmpty()) return false;
+        String regex = "^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
+
+        Pattern pattern = Pattern.compile(regex);
+        Matcher emailMatcher =pattern.matcher(email);
+        if(!emailMatcher.matches()){
+            throw new EmailFormatException("Email provided is not of the expected format");
+        }
+
+        return emailMatcher.matches();
     }
 }

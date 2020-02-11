@@ -2,10 +2,7 @@ package com.h2rd.refactoring.usermanagement.web;
 
 import com.h2rd.refactoring.usermanagement.config.Context;
 import com.h2rd.refactoring.usermanagement.dao.UserDao;
-import com.h2rd.refactoring.usermanagement.exception.EmailException;
-import com.h2rd.refactoring.usermanagement.exception.ResponseMessage;
-import com.h2rd.refactoring.usermanagement.exception.RoleException;
-import com.h2rd.refactoring.usermanagement.exception.UserNotFoundException;
+import com.h2rd.refactoring.usermanagement.exception.*;
 import com.h2rd.refactoring.usermanagement.domain.User;
 
 import javax.ws.rs.*;
@@ -13,6 +10,9 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.h2rd.refactoring.usermanagement.exception.email.EmailEmptyOrNullException;
+import com.h2rd.refactoring.usermanagement.exception.email.EmailFormatException;
+import com.h2rd.refactoring.usermanagement.exception.user.UserNotFoundException;
 import org.springframework.stereotype.Controller;
 
 import java.util.*;
@@ -24,10 +24,10 @@ public class UserResource {
 
 
     private UserDao userDao;
-    private ResponseMessage responseMessage;
+    private ResponseBody responseBody;
 
     {
-        responseMessage = new ResponseMessage();
+        responseBody = new ResponseBody();
         userDao = (UserDao) Context.getContext().getBean("userDao");
     }
 
@@ -57,11 +57,11 @@ public class UserResource {
         try {
 
             userDao.saveUser(user);
-        } catch (EmailException | RoleException exception) {
+        } catch (EmailEmptyOrNullException | EmailFormatException | RoleException exception) {
 
-            responseMessage.setMessage(exception.getMessage());
-            responseMessage.setStatus(400);
-            return Response.status(400).entity(responseMessage).build();
+            responseBody.setMessage(exception.getMessage());
+            responseBody.setStatus(400);
+            return Response.status(400).entity(responseBody).build();
 
         }
 
@@ -74,29 +74,29 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateUser(@QueryParam("name") String name,
                                @QueryParam("email") String email,
-                               @QueryParam("role") String roles) throws UserNotFoundException, RoleException, EmailException {
+                               @QueryParam("role") String roles) throws UserNotFoundException, RoleException, EmailEmptyOrNullException {
 
         User user = new User();
         user.setName(name);
         user.setEmail(email);
 
-        User updatedUser;
+        User updatedUser ;
 
         try {
             user.setRoles(convertRoleStringToRoleSet(roles));
             updatedUser = userDao.updateUser(user);
 
 
-        } catch (EmailException e) {
-            responseMessage.setStatus(400);
-            responseMessage.setMessage(e.getMessage());
-            return Response.status(400).entity(responseMessage).build();
+        } catch (EmailEmptyOrNullException | EmailFormatException e) {
+            responseBody.setStatus(400);
+            responseBody.setMessage(e.getMessage());
+            return Response.status(400).entity(responseBody).build();
 
 
         } catch (UserNotFoundException e) {
-            responseMessage.setMessage(e.getMessage());
-            responseMessage.setStatus(404);
-            return Response.status(404).entity(responseMessage).build();
+            responseBody.setMessage(e.getMessage());
+            responseBody.setStatus(404);
+            return Response.status(404).entity(responseBody).build();
         }
 
         return Response.ok().entity(updatedUser).build();
@@ -115,18 +115,18 @@ public class UserResource {
         try {
             userDao.deleteUser(user);
         } catch (UserNotFoundException e) {
-            responseMessage.setMessage(e.getMessage());
-            responseMessage.setStatus(404);
-            return Response.status(404).entity(responseMessage).build();
-        } catch (EmailException em) {
-            responseMessage.setMessage(em.getMessage());
-            responseMessage.setStatus(400);
-            return Response.status(400).entity(responseMessage).build();
+            responseBody.setMessage(e.getMessage());
+            responseBody.setStatus(404);
+            return Response.status(404).entity(responseBody).build();
+        } catch (EmailEmptyOrNullException | EmailFormatException em) {
+            responseBody.setMessage(em.getMessage());
+            responseBody.setStatus(400);
+            return Response.status(400).entity(responseBody).build();
         }
 
-        responseMessage.setMessage("User with email " + email + " was deleted successfully");
-        responseMessage.setStatus(200);
-        return Response.ok().entity(responseMessage).build();
+        responseBody.setMessage("User with email " + email + " was deleted successfully");
+        responseBody.setStatus(200);
+        return Response.ok().entity(responseBody).build();
     }
 
     @GET
@@ -136,9 +136,9 @@ public class UserResource {
       List<User> users = userDao.findAllUsers();
         if (users.isEmpty()) {
 
-            responseMessage.setStatus(200);
-            responseMessage.setMessage("No users found in the database");
-            return Response.status(200).entity(responseMessage).build();
+            responseBody.setStatus(200);
+            responseBody.setMessage("No users found in the database");
+            return Response.status(200).entity(responseBody).build();
         }
 
         GenericEntity<List<User>> usersEntity = new GenericEntity<List<User>>(users) {
@@ -156,13 +156,13 @@ public class UserResource {
         try {
             user = userDao.findUserByEmail(email);
         } catch (UserNotFoundException e) {
-            responseMessage.setMessage(e.getMessage());
-            responseMessage.setStatus(404);
-            return Response.status(404).entity(responseMessage).build();
-        } catch (EmailException e) {
-            responseMessage.setMessage(e.getMessage());
-            responseMessage.setStatus(400);
-            return Response.status(400).entity(responseMessage).build();
+            responseBody.setMessage(e.getMessage());
+            responseBody.setStatus(404);
+            return Response.status(404).entity(responseBody).build();
+        } catch (EmailEmptyOrNullException | EmailFormatException e) {
+            responseBody.setMessage(e.getMessage());
+            responseBody.setStatus(400);
+            return Response.status(400).entity(responseBody).build();
         }
 
 

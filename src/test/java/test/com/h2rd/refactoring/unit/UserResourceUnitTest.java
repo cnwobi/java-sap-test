@@ -1,23 +1,15 @@
 package test.com.h2rd.refactoring.unit;
 
 
-import com.h2rd.refactoring.usermanagement.config.Context;
 import com.h2rd.refactoring.usermanagement.dao.UserDao;
-import com.h2rd.refactoring.usermanagement.dao.UserDaoImpl;
 import com.h2rd.refactoring.usermanagement.domain.User;
-import com.h2rd.refactoring.usermanagement.exception.EmailException;
-import com.h2rd.refactoring.usermanagement.exception.ResponseMessage;
-import com.h2rd.refactoring.usermanagement.exception.UserNotFoundException;
+import com.h2rd.refactoring.usermanagement.exception.ResponseBody;
 import com.h2rd.refactoring.usermanagement.web.UserResource;
-import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.stubbing.Answer;
 
-import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
 
 import java.util.*;
@@ -49,10 +41,10 @@ public class UserResourceUnitTest {
 
       userDao.getUsers().clear();
         Response response = userResource.getUsers();
-        ResponseMessage responseMessage = (ResponseMessage) response.getEntity();
+        ResponseBody responseBody = (ResponseBody) response.getEntity();
         String expectedMessage ="No users found in the database";
         assertThat(response.getStatus()).isEqualTo(200);
-       assertThat(responseMessage.getMessage()).isEqualTo(expectedMessage);
+       assertThat(responseBody.getMessage()).isEqualTo(expectedMessage);
 
     }
 
