@@ -57,7 +57,7 @@ public class UserResource {
         try {
 
             userDao.saveUser(user);
-        } catch (EmailEmptyOrNullException | EmailFormatException | RoleException exception) {
+        } catch (EmailEmptyOrNullException |UserNotFoundException | EmailFormatException | RoleException exception) {
 
             responseBody.setMessage(exception.getMessage());
             responseBody.setStatus(400);

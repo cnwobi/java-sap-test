@@ -7,6 +7,7 @@ import com.h2rd.refactoring.usermanagement.exception.RoleException;
 import com.h2rd.refactoring.usermanagement.exception.email.EmailFormatException;
 import com.h2rd.refactoring.usermanagement.exception.user.UserNotFoundException;
 import com.h2rd.refactoring.usermanagement.domain.User;
+import com.h2rd.refactoring.usermanagement.exception.user.UserNotUniqueException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,6 +27,7 @@ public class UserDaoUnitTest {
     private static final String EMPTY_OR_NULL_EMAIL_EXCEPTION_MESSAGE = "Email address must not be empty";
     private static final String INCORRECTLY_FORMATED_EMAIL = "cdawe";
     private static final String EXPECTED_INVALID_EMAIL_FORMAT_EXCEPTION_MESSAGE = "Email provided is not of the expected format";
+    public static final String EXPECTED_NONE_UNIQUE_USER_EXCEPTION_MESSAGE = "A user with this email provided already exists on record";
 
     private Map<String, User> users;
     private User user;
@@ -58,7 +60,7 @@ public class UserDaoUnitTest {
         assertThatExceptionOfType(EmailFormatException.class)
                 .isThrownBy(() ->{
                     userDao.saveUser(user);
-                }).withMessage("Email provided is not of the expected format");
+                }).withMessage(EXPECTED_INVALID_EMAIL_FORMAT_EXCEPTION_MESSAGE);
 
 
 
@@ -85,11 +87,11 @@ public class UserDaoUnitTest {
         user1.setRoles(user.getRoles());
 
 
-        assertThatExceptionOfType(EmailEmptyOrNullException.class)
+        assertThatExceptionOfType(UserNotUniqueException.class)
                 .isThrownBy(() -> {
                     userDao.saveUser(user1);
                 })
-                .withMessage("Email provided already exists on record");
+                .withMessage(EXPECTED_NONE_UNIQUE_USER_EXCEPTION_MESSAGE);
 
 
     }

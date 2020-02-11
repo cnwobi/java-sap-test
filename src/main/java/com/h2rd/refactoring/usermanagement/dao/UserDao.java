@@ -16,7 +16,7 @@ public interface UserDao {
     User updateUser(User userToUpdate) throws UserNotFoundException, RoleException, EmailEmptyOrNullException, EmailFormatException;
     User findUserByEmail(String email) throws UserNotFoundException, EmailEmptyOrNullException, EmailFormatException;
 
-    List<User> findUsers(String name);
+    List<User> findUsersByName(String name);
     List<User> findAllUsers();
 
 }

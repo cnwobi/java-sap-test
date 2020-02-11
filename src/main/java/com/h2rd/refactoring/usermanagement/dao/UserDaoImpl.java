@@ -5,6 +5,7 @@ import com.h2rd.refactoring.usermanagement.exception.email.EmailFormatException;
 import com.h2rd.refactoring.usermanagement.exception.RoleException;
 import com.h2rd.refactoring.usermanagement.exception.user.UserNotFoundException;
 import com.h2rd.refactoring.usermanagement.domain.User;
+import com.h2rd.refactoring.usermanagement.exception.user.UserNotUniqueException;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -15,9 +16,9 @@ public class UserDaoImpl implements UserDao {
 
     private Map<String,User> users = Collections.synchronizedMap(new HashMap<>());
     @Override
-    public void saveUser(User user) throws EmailEmptyOrNullException, RoleException, EmailFormatException {
+    public void saveUser(User user) throws EmailEmptyOrNullException, RoleException, EmailFormatException, UserNotUniqueException {
         if (!emailIsValid(user.getEmail()) ) throw getEmptyOrNullEmailException();
-        if (!userEmailIsUnique(user)) throw new EmailEmptyOrNullException("Email provided already exists on record");
+        if (!userEmailIsUnique(user)) throw new UserNotUniqueException("A user with this email provided already exists on record");
         if (!userHasAtLeastOneRole(user)) throw new RoleException("A user must have at least one role");
         //convert input email to lower case
         user.setEmail(user.getEmail().toLowerCase());
@@ -90,7 +91,7 @@ public class UserDaoImpl implements UserDao {
 
 
     @Override
-    public List<User> findUsers(String name) {
+    public List<User> findUsersByName(String name) {
         List<User> usersList = Collections.synchronizedList(new ArrayList<>());
         for(Map.Entry<String,User> entry : users.entrySet()){
             if(entry.getValue().getName().equalsIgnoreCase(name)){
